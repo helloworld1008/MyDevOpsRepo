@@ -1,0 +1,238 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "0f4bd7db-37ce-4534-8df4-6d1e1d96a262": {
+                "size": {
+                    "width": 140,
+                    "height": 140
+                },
+                "position": {
+                    "x": 330,
+                    "y": 80
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "6bef2ed4-66fd-4bbd-998c-85f4d8746e81": {
+                "size": {
+                    "width": 140,
+                    "height": 140
+                },
+                "position": {
+                    "x": 650,
+                    "y": 96
+                },
+                "z": 0,
+                "embeds": [],
+                "iscontainedinside": [
+                    "0f4bd7db-37ce-4534-8df4-6d1e1d96a262"
+                ]
+            },
+            "3bd622db-24ba-4d25-b619-7c3693d759eb": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 860,
+                    "y": 123
+                },
+                "z": 0,
+                "embeds": [],
+                "isassociatedwith": [
+                    "1fc580c7-6230-464d-aa47-1d57a1cfadac"
+                ],
+                "iscontainedinside": [
+                    "6bef2ed4-66fd-4bbd-998c-85f4d8746e81"
+                ]
+            },
+            "1fc580c7-6230-464d-aa47-1d57a1cfadac": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 200,
+                    "y": 250
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "71ad2bb8-4caf-4fe8-a333-025f08d9422a": {
+                "source": {
+                    "id": "0f4bd7db-37ce-4534-8df4-6d1e1d96a262"
+                },
+                "target": {
+                    "id": "1fc580c7-6230-464d-aa47-1d57a1cfadac"
+                },
+                "z": 0
+            },
+            "5baec864-7b39-4bb2-9ba3-01ad5a955455": {
+                "size": {
+                    "width": 140,
+                    "height": 140
+                },
+                "position": {
+                    "x": 451.08268393993654,
+                    "y": 319.3307158602424
+                },
+                "z": 0
+            }
+        }
+    },
+    "Resources": {
+        "MyVpc": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": "10.0.0.0/27",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "MyVpc"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "0f4bd7db-37ce-4534-8df4-6d1e1d96a262"
+                }
+            }
+        },
+        "MyRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "MyVpc"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "MyRouteTable"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "6bef2ed4-66fd-4bbd-998c-85f4d8746e81"
+                }
+            }
+        },
+        "MyRoute1": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "MyRouteTable"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "MyIgw"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "3bd622db-24ba-4d25-b619-7c3693d759eb"
+                }
+            }
+        },
+        "MyIgw": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "MyIgw"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "1fc580c7-6230-464d-aa47-1d57a1cfadac"
+                }
+            }
+        },
+        "AttachGateway": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "MyVpc"
+                },
+                "InternetGatewayId": {
+                    "Ref": "MyIgw"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "71ad2bb8-4caf-4fe8-a333-025f08d9422a"
+                }
+            }
+        },
+        "MySubnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone" : "us-east-1f",
+                "CidrBlock" : "10.0.0.0/28",
+				"MapPublicIpOnLaunch" : "True",
+                "VpcId" : { "Ref" : "MyVpc" },
+                "Tags" : [ { "Key" : "Name", "Value" : "MySubnet1" } ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "5baec864-7b39-4bb2-9ba3-01ad5a955455"
+                }
+            }
+        },
+        "MySubnetRouteTableAssociation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : { "Ref" : "MyRouteTable" },
+                "SubnetId" : { "Ref" : "MySubnet1" }
+            }
+        },
+		"MySecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription" : "Allow all traffic to EC2 instance",
+                "VpcId" : { "Ref" : "MyVpc" },
+                "SecurityGroupIngress" : [{
+                    "CidrIp" : "0.0.0.0/0",
+                    "IpProtocol" : "-1"
+                }],
+				"Tags" : [ { "Key" : "Name", "Value" : "MySecurityGroup" } ]
+            }
+        },		
+		"JenkinsENI" : {
+			"Type" : "AWS::EC2::NetworkInterface",
+			"Properties" : {
+				"Tags": [{"Key":"name","Value":"JenkinsENI"}],
+				"Description": "A nice description.",
+				"SourceDestCheck": "true",
+				"GroupSet": [{"Ref" : "MySecurityGroup"}],
+				"SubnetId": { "Ref" : "MySubnet1" },
+				"PrivateIpAddress": "10.0.0.5"
+			}
+		},
+        "Jenkins": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "Tags" : [ { "Key" : "Name", "Value" : "Jenkins" } ],
+                "AvailabilityZone" : "us-east-1f",
+                "InstanceType" : "t2.micro",
+                "ImageId" : "ami-0cff7528ff583bf9a",
+				"NetworkInterfaces" : [ { "NetworkInterfaceId" : {"Ref" : "JenkinsENI"}, "DeviceIndex" : "0" } ],        
+                "KeyName" : "mykeypair",
+				"UserData": { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash\n",
+					"wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo\n",
+					"rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key\n",
+					"yum -y upgrade\n",
+					"amazon-linux-extras install -y java-openjdk11\n",
+					"yum -y install jenkins\n",
+					"systemctl daemon-reload\n",
+					"sleep 10\n",
+					"systemctl start jenkins\n"]]}
+				}
+            }
+        }
+    }
+}
